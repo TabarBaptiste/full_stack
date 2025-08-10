@@ -1,0 +1,154 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  // uncomment next line if you use Prisma <5.10
+  // directUrl = env("DATABASE_URL_UNPOOLED")
+}
+
+// ========== ENUMS ==========
+enum Role {
+  ADMIN
+  CLIENT
+}
+
+enum ReservationStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+enum PurchaseStatus {
+  PENDING
+  DELIVERED
+  CANCELLED
+}
+
+// ========== MODELS ==========
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  firstname String
+  lastname  String
+  role      Role
+  phone     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  reservations Reservation[]
+  purchases    Purchase[]
+  reviews      Review[]
+}
+
+model Prestation {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  duration    Int
+  price       Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  category     Category      @relation(fields: [categoryId], references: [id])
+  categoryId   String
+  reservations Reservation[]
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  name        String
+  description String
+  price       Float
+  stock       Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  category   Category   @relation(fields: [categoryId], references: [id])
+  categoryId String
+  purchases  Purchase[]
+}
+
+model Category {
+  id          String @id @default(uuid())
+  name        String
+  description String
+
+  // Relations
+  prestations Prestation[]
+  products    Product[]
+}
+
+model Reservation {
+  id        String            @id @default(uuid())
+  startDate DateTime
+  endDate   DateTime
+  status    ReservationStatus
+  price     Float
+  createdAt DateTime          @default(now())
+
+  // Relations
+  user         User       @relation(fields: [userId], references: [id])
+  userId       String
+  prestation   Prestation @relation(fields: [prestationId], references: [id])
+  prestationId String
+}
+
+model Purchase {
+  id        String         @id @default(uuid())
+  createdAt DateTime       @default(now())
+  status    PurchaseStatus
+  price     Float
+
+  // Relations
+  user      User    @relation(fields: [userId], references: [id])
+  userId    String
+  product   Product @relation(fields: [productId], references: [id])
+  productId String
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  content   String
+  rating    Int
+  visible   Boolean
+  createdAt DateTime @default(now())
+
+  // Relations
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+}
+
+model RecurringSlot {
+  id        String @id @default(uuid())
+  dayOfWeek Int
+  startTime String
+  endTime   String
+}
+
+model RecurringSlotException {
+  id   String   @id @default(uuid())
+  date DateTime
+}
+
+model OneTimeSlot {
+  id        String   @id @default(uuid())
+  date      DateTime
+  startTime String
+  endTime   String
+}
