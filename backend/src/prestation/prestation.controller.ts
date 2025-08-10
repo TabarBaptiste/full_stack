@@ -25,17 +25,17 @@ export class PrestationController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.prestationService.findOne(+id);
+  findOne(@Param('id') id: number) {
+    return this.prestationService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePrestationDto: Prisma.PrestationUpdateInput) {
-    return this.prestationService.update(+id, updatePrestationDto);
+  update(@Param('id') id: number, @Body() updatePrestationDto: Prisma.PrestationUpdateInput) {
+    return this.prestationService.update(id, updatePrestationDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.prestationService.remove(+id);
+  remove(@Param('id') id: number) {
+    return this.prestationService.remove(id);
   }
 }
