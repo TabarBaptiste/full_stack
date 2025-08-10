@@ -6,7 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
+  // output   = "../generated/prisma"
 }
 
 datasource db {
@@ -38,7 +38,7 @@ enum PurchaseStatus {
 // ========== MODELS ==========
 
 model User {
-  id        String   @id @default(uuid())
+  id        Int      @id @default(autoincrement())
   email     String   @unique
   password  String
   firstname String
@@ -55,7 +55,7 @@ model User {
 }
 
 model Prestation {
-  id          String   @id @default(uuid())
+  id          Int      @id @default(autoincrement())
   title       String
   description String
   duration    Int
@@ -70,7 +70,7 @@ model Prestation {
 }
 
 model Product {
-  id          String   @id @default(uuid())
+  id          Int      @id @default(autoincrement())
   name        String
   description String
   price       Float
@@ -104,9 +104,9 @@ model Reservation {
 
   // Relations
   user         User       @relation(fields: [userId], references: [id])
-  userId       String
+  userId       Int
   prestation   Prestation @relation(fields: [prestationId], references: [id])
-  prestationId String
+  prestationId Int
 }
 
 model Purchase {
@@ -117,13 +117,13 @@ model Purchase {
 
   // Relations
   user      User    @relation(fields: [userId], references: [id])
-  userId    String
+  userId    Int
   product   Product @relation(fields: [productId], references: [id])
-  productId String
+  productId Int
 }
 
 model Review {
-  id        String   @id @default(uuid())
+  id        Int      @id @default(autoincrement())
   content   String
   rating    Int
   visible   Boolean
@@ -131,7 +131,7 @@ model Review {
 
   // Relations
   user   User   @relation(fields: [userId], references: [id])
-  userId String
+  userId Int
 }
 
 model RecurringSlot {
@@ -142,12 +142,12 @@ model RecurringSlot {
 }
 
 model RecurringSlotException {
-  id   String   @id @default(uuid())
+  id   Int      @id @default(autoincrement())
   date DateTime
 }
 
 model OneTimeSlot {
-  id        String   @id @default(uuid())
+  id        Int      @id @default(autoincrement())
   date      DateTime
   startTime String
   endTime   String
