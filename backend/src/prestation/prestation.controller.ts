@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { PrestationService } from './prestation.service';
 import { Prisma } from '@prisma/client';
-// import { CreatePrestationDto } from './dto/create-prestation.dto';
+import { CreatePrestationDto } from './dto/create-prestation.dto';
 // import { UpdatePrestationDto } from './dto/update-prestation.dto';
 
 @Controller('prestation')
@@ -9,8 +9,16 @@ export class PrestationController {
   constructor(private readonly prestationService: PrestationService) { }
 
   @Post()
-  create(@Body() createPrestationDto: Prisma.PrestationCreateInput) {
-    return this.prestationService.create(createPrestationDto);
+  create(@Body() createPrestationDto: CreatePrestationDto) {
+    return this.prestationService.create({
+      title: createPrestationDto.title,
+      description: createPrestationDto.description,
+      duration: Number(createPrestationDto.duration),
+      price: Number(createPrestationDto.price),
+      category: {
+        connect: { id: Number(createPrestationDto.categoryId) }
+      }
+    });
   }
 
   // Lorsque je vais créé des Users (ajouter query dans 1er import)

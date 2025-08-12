@@ -8,12 +8,14 @@ import { DatabaseService } from 'src/database/database.service';
 export class PrestationService {
   constructor(private readonly databaseService: DatabaseService) { }
 
-  async create(createPrestationDto: Prisma.PrestationCreateInput) {
-    return this.databaseService.prestation.create({ data: createPrestationDto });
+  async create(data: Prisma.PrestationCreateInput) {
+    return this.databaseService.prestation.create({
+      data
+    });
   }
 
   // async findAll(role?: 'USER' | 'ADMIN') {
-  async findAll() {
+    async findAll() {
     // if (role) return this.databaseService.prestation.findMany({ where: { role } });
     return this.databaseService.prestation.findMany();
   }
