@@ -7,9 +7,11 @@ import { CategoryModule } from './category/category.module';
 import { ProductModule } from './product/product.module';
 import { UserModule } from './user/user.module';
 import { ReservationModule } from './reservation/reservation.module';
+import { PurchaseModule } from './purchase/purchase.module';
+import { ReviewModule } from './review/review.module';
 
 @Module({
-  imports: [DatabaseModule, PrestationModule, CategoryModule, ProductModule, UserModule, ReservationModule],
+  imports: [DatabaseModule, PrestationModule, CategoryModule, ProductModule, UserModule, ReservationModule, PurchaseModule, ReviewModule],
   controllers: [AppController],
   providers: [AppService],
 })
