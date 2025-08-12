@@ -15,7 +15,7 @@ export class PrestationService {
   }
 
   // async findAll(role?: 'USER' | 'ADMIN') {
-    async findAll() {
+  async findAll() {
     // if (role) return this.databaseService.prestation.findMany({ where: { role } });
     return this.databaseService.prestation.findMany();
   }
