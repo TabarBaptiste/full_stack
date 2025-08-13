@@ -15,7 +15,6 @@ import {
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-// TODO crééer les fichiers auth/guards
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -27,8 +26,8 @@ export class ProductsController {
 
   // POST /products - Création (ADMIN uniquement)
   @Post()
-  // @UseGuards(JwtAuthGuard, RolesGuard)
-  // @Roles(Role.ADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
   @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
   create(@Body() createProductDto: CreateProductDto) {
     return this.productsService.create(createProductDto);

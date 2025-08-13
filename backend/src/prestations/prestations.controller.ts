@@ -15,7 +15,6 @@ import {
 import { PrestationsService } from './prestations.service';
 import { CreatePrestationDto } from './dto/create-prestation.dto';
 import { UpdatePrestationDto } from './dto/update-prestation.dto';
-// TODO crééer les fichiers auth/guards
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -27,8 +26,8 @@ export class PrestationsController {
 
   // POST /prestations - Création (ADMIN uniquement)
   @Post()
-  // @UseGuards(JwtAuthGuard, RolesGuard)
-  // @Roles(Role.ADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
   @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
   create(@Body() createPrestationDto: CreatePrestationDto) {
     return this.prestationsService.create(createPrestationDto);
