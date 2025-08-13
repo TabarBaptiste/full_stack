@@ -52,7 +52,7 @@
 * [ ] ✅ Prendre rendez-vous (client)
 * [ ] 📄 Lister ses propres réservations (client)
 * [ ] 📄 Admin : lister toutes les réservations
-* [ ] 🔧 Modifier un rendez-vous (client ou admin)
+<!-- * [ ] 🔧 Modifier un rendez-vous (client ou admin) -->
 * [ ] ❌ Annuler un rendez-vous (client ou admin)
 * [ ] 🔁 Admin : changer le statut (confirmé / annulé)
 

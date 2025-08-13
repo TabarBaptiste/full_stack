@@ -57,15 +57,15 @@ model User {
 model Prestation {
   id          Int      @id @default(autoincrement())
   title       String
-  description String
-  duration    Int
+  description String?
+  duration    Int?
   price       Float
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   // Relations
   category     Category      @relation(fields: [categoryId], references: [id])
-  categoryId   Int
+  categoryId   Int           @default(1)
   reservations Reservation[]
 }
 
