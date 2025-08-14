@@ -43,11 +43,11 @@ export class ProductsService {
     return await this.prisma.product.findMany({
       include: {
         category: true,
-        _count: {
-          select: {
-            purchases: true,
-          },
-        },
+        // _count: {
+          // select: {
+            // purchases: true,
+          // },
+        // },
       },
       orderBy: {
         createdAt: 'desc',
@@ -59,24 +59,15 @@ export class ProductsService {
     const product = await this.prisma.product.findUnique({
       where: { id },
       include: {
-        category: true,
-        purchases: {
-          select: {
-            id: true,
-            status: true,
-            user: {
-              select: {
-                id: true,
-                firstname: true,
-                lastname: true,
-                email: true,
-              },
-            },
-          },
-        },
+        // category: true,
+        // orderItems: {
+        //   select: {
+        //     order: true,
+        //   },
+        // },
         _count: {
           select: {
-            purchases: true,
+            orderItems: true,
           },
         },
       },
@@ -127,13 +118,13 @@ export class ProductsService {
     // Vérifier que la product existe
     const existingProduct = await this.prisma.product.findUnique({
       where: { id },
-      include: {
-        _count: {
-          select: {
-            purchases: true,
-          },
-        },
-      },
+      // include: {
+      //   _count: {
+      //     select: {
+      //       purchases: true,
+      //     },
+      //   },
+      // },
     });
 
     if (!existingProduct) {
@@ -150,7 +141,8 @@ export class ProductsService {
       });
 
       return {
-        message: `Product "${deletedProduct.name}" has been successfully deleted. ${existingProduct._count.purchases} reservation(s) were preserved for history.`,
+        // message: `Product "${deletedProduct.name}" has been successfully deleted. ${existingProduct._count.purchases} reservation(s) were preserved for history.`,
+        message: `Product "${deletedProduct.name}" has been successfully deleted. reservation(s) were preserved for history.`,
         deletedProduct,
       };
     } catch (error) {

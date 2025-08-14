@@ -74,18 +74,23 @@ export class UsersService {
             createdAt: 'desc',
           },
         },
-        purchases: {
+        orders: {
           select: {
             id: true,
             status: true,
-            price: true,
+            totalPrice: true,
             createdAt: true,
-            product: {
-              select: {
-                id: true,
-                name: true,
+            items: {
+              include: {
+                product: true,
               },
             },
+            // product: {
+            //   select: {
+            //     id: true,
+            //     name: true,
+            //   },
+            // },
           },
           orderBy: {
             createdAt: 'desc',
@@ -207,7 +212,7 @@ export class UsersService {
         _count: {
           select: {
             reservations: true,
-            purchases: true,
+            orders: true,
             reviews: true,
           },
         },
@@ -227,7 +232,7 @@ export class UsersService {
       message: 'Account successfully deleted',
       preservedData: {
         reservations: existingUser._count.reservations,
-        purchases: existingUser._count.purchases,
+        orders: existingUser._count.orders,
         reviews: existingUser._count.reviews,
       },
     };
@@ -257,7 +262,7 @@ export class UsersService {
         _count: {
           select: {
             reservations: true,
-            purchases: true,
+            orders: true,
             reviews: true,
           },
         },
@@ -305,18 +310,23 @@ export class UsersService {
             },
           },
         },
-        purchases: {
+        orders: {
           select: {
             id: true,
             status: true,
-            price: true,
+            totalPrice: true,
             createdAt: true,
-            product: {
-              select: {
-                id: true,
-                name: true,
+            items: {
+              include: {
+                product: true,
               },
             },
+            // product: {
+            //   select: {
+            //     id: true,
+            //     name: true,
+            //   },
+            // },
           },
         },
         reviews: {

@@ -119,23 +119,41 @@
 
 ---
 
-## 5. **Commande (`Purchase`)**
+## 5. **Commande (`Order`)**
 
 ### Création
 
-* Tout utilisateur connecté peut commander un produit si `stock > 0`.
-* `price` = somme des prix des produits commandés (figée à la création).
-* Décrément immédiat du `stock`.
+* Tout utilisateur connecté peut passer une commande si chaque produit a un `stock > 0`.
+* Une commande contient une ou plusieurs lignes (`OrderItem`), chacune associée à un produit.
+* `totalPrice` = somme des `unitPrice × quantity` pour chaque ligne (figé à la création).
+* Décrément immédiat du `stock` pour chaque produit commandé.
 
 ### Modification
 
-* **CLIENT** : peut annuler sa commande.
-* **ADMIN** : peut annuler ou marquer comme `DELIVERED`.
+* **CLIENT** : peut annuler sa propre commande tant qu’elle n’est pas marquée comme `DELIVERED`.
+* **ADMIN** : peut annuler, modifier le statut (`PENDING`, `CANCELLED`, `DELIVERED`).
 
 ### Lecture
 
 * **CLIENT** : accès uniquement à ses commandes (ordre décroissant par `createdAt`).
-* **ADMIN** : accède à toutes les commandes (ordre décroissant par `createdAt`).
+* **ADMIN** : accès à toutes les commandes (ordre décroissant par `createdAt`).
+
+---
+
+## 5.1 **Ligne de Commande (`OrderItem`)**
+
+### Création
+
+* Associée à une commande (`orderId`) et à un produit (`productId`).
+* Champs figés à la création pour garantir l’historique :
+
+  * `productName`
+  * `unitPrice`
+  * `quantity`
+
+### Lecture
+
+* Accessible uniquement via la commande à laquelle la ligne est rattachée.
 
 ---
 
