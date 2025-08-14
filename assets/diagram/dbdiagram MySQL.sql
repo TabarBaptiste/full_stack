@@ -1,5 +1,5 @@
 CREATE TABLE `User` (
-  `id` varchar(255) UNIQUE PRIMARY KEY,
+  `id` int PRIMARY KEY AUTO_INCREMENT,
   `email` varchar(255) UNIQUE,
   `password` varchar(255),
   `firstname` varchar(255),
@@ -11,76 +11,84 @@ CREATE TABLE `User` (
 );
 
 CREATE TABLE `Prestation` (
-  `id` varchar(255) PRIMARY KEY,
+  `id` int PRIMARY KEY AUTO_INCREMENT,
   `title` varchar(255),
   `description` text,
   `duration` int,
   `price` float,
   `createdAt` datetime,
   `updatedAt` datetime,
-  `categoryId` varchar(255)
+  `categoryId` int
 );
 
 CREATE TABLE `Product` (
-  `id` varchar(255) PRIMARY KEY,
+  `id` int PRIMARY KEY AUTO_INCREMENT,
   `name` varchar(255),
   `description` text,
   `price` float,
   `stock` int,
   `createdAt` datetime,
   `updatedAt` datetime,
-  `categoryId` varchar(255)
+  `categoryId` int
 );
 
 CREATE TABLE `Category` (
-  `id` varchar(255) PRIMARY KEY,
+  `id` int PRIMARY KEY AUTO_INCREMENT,
   `name` varchar(255),
   `description` text
 );
 
 CREATE TABLE `Reservation` (
-  `id` varchar(255) PRIMARY KEY,
+  `id` int PRIMARY KEY AUTO_INCREMENT,
   `startDate` datetime,
   `endDate` datetime,
   `status` ENUM ('PENDING', 'CONFIRMED', 'CANCELLED', 'COMPLETED'),
   `price` float,
   `createdAt` datetime,
-  `userId` varchar(255),
-  `prestationId` varchar(255)
+  `userId` int,
+  `prestationId` int
 );
 
-CREATE TABLE `Purchase` (
-  `id` varchar(255) PRIMARY KEY,
+CREATE TABLE `Order` (
+  `id` int PRIMARY KEY AUTO_INCREMENT,
   `createdAt` datetime,
   `status` ENUM ('PENDING', 'DELIVERED', 'CANCELLED'),
+  `totalPrice` float,
+  `userId` int
+);
+
+CREATE TABLE `OrderItem` (
+  `id` int PRIMARY KEY AUTO_INCREMENT,
+  `quantity` int,
   `price` float,
-  `userId` varchar(255),
-  `productId` varchar(255)
+  `createdAt` datetime,
+  `orderId` int,
+  `productId` int
 );
 
 CREATE TABLE `Review` (
-  `id` varchar(255) PRIMARY KEY,
+  `id` int PRIMARY KEY AUTO_INCREMENT,
   `content` text,
   `rating` int,
   `visible` boolean,
   `createdAt` datetime,
-  `userId` varchar(255)
+  `userId` int
 );
 
 CREATE TABLE `RecurringSlot` (
-  `id` varchar(255) PRIMARY KEY,
+  `id` int PRIMARY KEY AUTO_INCREMENT,
   `dayOfWeek` int,
   `startTime` varchar(255),
   `endTime` varchar(255)
 );
 
 CREATE TABLE `RecurringSlotException` (
-  `id` varchar(255) PRIMARY KEY,
+  `id` int PRIMARY KEY AUTO_INCREMENT,
   `date` datetime
 );
 
 CREATE TABLE `OneTimeSlot` (
-  `id` varchar(255) PRIMARY KEY,
+  `id` int PRIMARY KEY AUTO_INCREMENT,
   `date` datetime,
   `startTime` varchar(255),
   `endTime` varchar(255)
@@ -94,8 +102,10 @@ ALTER TABLE `Prestation` ADD FOREIGN KEY (`categoryId`) REFERENCES `Category` (`
 
 ALTER TABLE `Product` ADD FOREIGN KEY (`categoryId`) REFERENCES `Category` (`id`);
 
-ALTER TABLE `Purchase` ADD FOREIGN KEY (`userId`) REFERENCES `User` (`id`);
+ALTER TABLE `Order` ADD FOREIGN KEY (`userId`) REFERENCES `User` (`id`);
 
-ALTER TABLE `Purchase` ADD FOREIGN KEY (`productId`) REFERENCES `Product` (`id`);
+ALTER TABLE `OrderItem` ADD FOREIGN KEY (`orderId`) REFERENCES `Order` (`id`);
+
+ALTER TABLE `OrderItem` ADD FOREIGN KEY (`productId`) REFERENCES `Product` (`id`);
 
 ALTER TABLE `Review` ADD FOREIGN KEY (`userId`) REFERENCES `User` (`id`);

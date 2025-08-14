@@ -19,7 +19,4 @@ export class UpdateReservationDto extends PartialType(CreateReservationDto) {
     @IsOptional()
     @IsNumber()
     price?: number;
-
-    // On n'autorise généralement pas la modification de userId et prestationId
-    // dans une mise à jour, mais on peut les garder optionnels si nécessaire
 }
