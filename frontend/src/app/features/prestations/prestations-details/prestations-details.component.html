@@ -1,0 +1,126 @@
+<!-- frontend/src/app/features/prestations/prestations-details/prestations-details.component.html -->
+<div class="prestations-details-container">
+
+    <!-- Navigation -->
+    <div class="navigation">
+        <button class="btn-back" (click)="goBack()">
+            ← Retour aux prestations
+        </button>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="loading" class="loading">
+        <div class="spinner"></div>
+        <p>Chargement...</p>
+    </div>
+
+    <!-- Error -->
+    <div *ngIf="error && !loading" class="error-message">
+        <p>{{ error }}</p>
+        <button class="btn btn-primary" (click)="goBack()">Retour</button>
+    </div>
+
+    <!-- Content -->
+    <div *ngIf="prestation && !loading && !error" class="content">
+
+        <!-- Prestation Details -->
+        <div class="prestation-info">
+            <h1>{{ prestation.title }}</h1>
+            <div class="prestation-meta">
+                <div class="meta-item">
+                    <span class="label">Durée :</span>
+                    <span class="value">{{ formatDuration(prestation.duration ?? 0) }}</span>
+                </div>
+                <div class="meta-item">
+                    <span class="label">Prix :</span>
+                    <span class="value price">{{ formatPrice(prestation.price) }}</span>
+                </div>
+            </div>
+            <p *ngIf="prestation.description" class="description">{{ prestation.description }}</p>
+        </div>
+
+        <!-- Booking Section -->
+        <div class="booking-section">
+            <h2>Réserver votre rendez-vous</h2>
+
+            <!-- Calendar -->
+            <div class="calendar-section">
+                <h3>Choisir une date</h3>
+
+                <!-- Calendar Header -->
+                <div class="calendar-header">
+                    <button class="btn-nav" (click)="previousMonth()">‹</button>
+                    <h4>{{ getCurrentMonthName() }}</h4>
+                    <button class="btn-nav" (click)="nextMonth()">›</button>
+                </div>
+
+                <!-- Days of Week -->
+                <div class="days-header">
+                    <div class="day-name">L</div>
+                    <div class="day-name">M</div>
+                    <div class="day-name">M</div>
+                    <div class="day-name">J</div>
+                    <div class="day-name">V</div>
+                    <div class="day-name">S</div>
+                    <div class="day-name">D</div>
+                </div>
+
+                <!-- Calendar Grid -->
+                <div class="calendar-grid">
+                    <div *ngFor="let day of calendarDays" class="calendar-day"
+                        [class.available]="day !== null" [class.selected]="isDateSelected(day)"
+                        [class.disabled]="day === null" (click)="selectDate(day)">
+                        {{ day?.getDate() || '' }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Time Slots -->
+            <div class="time-slots-section" *ngIf="selectedDate">
+                <h3>Choisir un créneau pour le {{ formatDate(selectedDate) }}</h3>
+
+                <div class="time-slots-grid">
+                    <button *ngFor="let slot of availableSlots" class="time-slot"
+                        [class.selected]="isTimeSelected(slot)" (click)="selectTime(slot)">
+                        {{ slot }}
+                    </button>
+                </div>
+            </div>
+
+            <!-- Booking Summary -->
+            <div class="booking-summary" *ngIf="selectedDate && selectedTime">
+                <h3>Récapitulatif de votre rendez-vous</h3>
+                <div class="summary-content">
+                    <div class="summary-item">
+                        <span class="label">Prestation :</span>
+                        <span class="value">{{ prestation.title }}</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">Date :</span>
+                        <span class="value">{{ formatDate(selectedDate) }}</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">Heure :</span>
+                        <span class="value">{{ selectedTime }}</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">Durée :</span>
+                        <span class="value">{{ formatDuration(prestation.duration ?? 0) }}</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">Prix :</span>
+                        <span class="value price">{{ formatPrice(prestation.price) }}</span>
+                    </div>
+                </div>
+
+                <div class="booking-actions">
+                    <button class="btn btn-secondary" (click)="goBack()">Annuler</button>
+                    <button class="btn btn-primary" (click)="confirmAppointment()">
+                        Confirmer le rendez-vous
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
