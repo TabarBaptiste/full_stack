@@ -9,24 +9,9 @@ export const routes: Routes = [
     },
     {
         path: 'prestations',
-        loadComponent: () => import('./features/prestations/prestations.component')
-            .then(c => c.PrestationsComponent)
+        loadComponent: () => import('./prestations/prestations-list/prestations-list.component')
+            .then(c => c.PrestationsListComponent)
     },
-    // {
-    //     path: 'prestations/create',
-    //     loadComponent: () => import('./features/prestations/prestation-form/prestation-form.component')
-    //         .then(c => c.PrestationFormComponent)
-    // },
-    {
-        path: 'prestations/:id',
-        loadComponent: () => import('./features/prestations/prestations-details/prestations-details.component')
-            .then(c => c.PrestationsDetailsComponent)
-    },
-    // {
-    //     path: 'prestations/:id/edit',
-    //     loadComponent: () => import('./features/prestations/prestation-form/prestation-form.component')
-    //         .then(c => c.PrestationFormComponent)
-    // },
     {
         path: '**',
         redirectTo: '/prestations'

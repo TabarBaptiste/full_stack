@@ -1,0 +1,14 @@
+<div *ngIf="loading">Chargement des prestations...</div>
+<div *ngIf="error">{{ error }}</div>
+
+<div *ngIf="!loading && !error">
+    <h2>Liste des prestations</h2>
+    <ul>
+        <li *ngFor="let prestation of prestations">
+            <h3>{{ prestation.title }} ({{ prestation.price }} €)</h3>
+            <p>{{ prestation.description }}</p>
+            <p><strong>Durée :</strong> {{ prestation.duration }} min</p>
+            <hr>
+        </li>
+    </ul>
+</div>
