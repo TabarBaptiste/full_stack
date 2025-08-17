@@ -1,0 +1,21 @@
+<h2>Inscription</h2>
+<form (ngSubmit)="onSubmit()">
+    <label>Prénom:</label>
+    <input type="text" [(ngModel)]="firstname" name="firstname" required>
+
+    <label>Nom:</label>
+    <input type="text" [(ngModel)]="lastname" name="lastname" required>
+
+    <label>Email:</label>
+    <input type="email" [(ngModel)]="email" name="email" required>
+
+    <label>Téléphone:</label>
+    <input type="text" [(ngModel)]="phone" name="phone">
+
+    <label>Mot de passe:</label>
+    <input type="password" [(ngModel)]="password" name="password" required>
+
+    <button type="submit">S’inscrire</button>
+
+    <div *ngIf="error" style="color:red">{{ error }}</div>
+</form>

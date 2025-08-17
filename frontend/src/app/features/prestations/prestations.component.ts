@@ -42,7 +42,6 @@ export class PrestationsComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (prestations) => {
           this.prestations = prestations;
-          console.log(this.prestations);
           this.loading = false;
         },
         error: (error) => {

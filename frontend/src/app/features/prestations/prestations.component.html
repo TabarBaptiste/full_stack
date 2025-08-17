@@ -5,9 +5,9 @@
             <!-- <img [src]="massage.image" [alt]="massage.title" class="massage-img" /> -->
             <div class="massage-content">
                 <h3>{{ massage.title }}</h3>
-                <p class="massage-duration">{{ massage.duration }}</p>
+                <p class="massage-duration">{{ massage.duration }} min</p>
                 <p class="massage-description" [innerHTML]="massage.description"></p>
-                <p class="massage-price">{{ massage.price }}</p>
+                <p class="massage-price">{{ massage.price }} €</p>
                 <a class="massage-contact" [routerLink]="['/prestations', massage.id]">
                     Je prends rendez-vous
                 </a>
