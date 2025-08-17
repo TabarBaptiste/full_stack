@@ -9,43 +9,77 @@ export class ReservationService {
   constructor(private readonly databaseService: DatabaseService) { }
 
   async create(data: CreateReservationDto) {
-    // Validation des dates
+    // Parse des dates
     const startDate = new Date(data.startDate);
-    const endDate = new Date(data.endDate);
-
-    if (startDate >= endDate) {
-      throw new BadRequestException('La date de fin doit être avant à la date de début');
-    }
-
-    if (startDate < new Date()) {
-      throw new BadRequestException('La date de début ne peut pas être dans le passé');
+    if (isNaN(startDate.getTime())) {
+      throw new BadRequestException('Date de début invalide');
     }
 
     // Vérifier que l'utilisateur existe
     const user = await this.databaseService.user.findUnique({
       where: { id: data.userId }
     });
-    if (!user) {
-      throw new NotFoundException('Utilisateur non trouvé');
-    }
+    if (!user) throw new NotFoundException('Utilisateur non trouvé');
 
-    // Vérifier que la prestation existe
+    // Récupérer la prestation
     const prestation = await this.databaseService.prestation.findUnique({
       where: { id: data.prestationId }
     });
-    if (!prestation) {
-      throw new NotFoundException('Prestation non trouvée');
+    if (!prestation) throw new NotFoundException('Prestation non trouvée');
+
+    // Durée et pause en minutes
+    const duration = prestation.duration ?? 60; // minutes par défaut
+    const pauseBetween = 15; // configurable -> tu peux extraire en config/env
+
+    // Calculer endDate à partir de la durée + pause (on ne stocke pas la pause dans endDate,
+    // mais on l'utilise pour découper les créneaux disponibles)
+    const endDate = new Date(startDate.getTime() + duration * 60_000);
+
+    // Vérifications basiques temporelles
+    if (startDate >= endDate) {
+      throw new BadRequestException('La date de fin doit être postérieure à la date de début');
+    }
+    if (startDate < new Date()) {
+      throw new BadRequestException('La date de début ne peut pas être dans le passé');
     }
 
-    // Vérifier les conflits de créneaux (pas de double réservation)
+    // 1) Vérifier si le jour est marqué comme exception (absence)
+    const startOfDay = new Date(startDate);
+    startOfDay.setHours(0, 0, 0, 0);
+    const endOfDay = new Date(startOfDay);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    const exception = await this.databaseService.recurringSlotException.findFirst({
+      where: {
+        date: {
+          gte: startOfDay,
+          lte: endOfDay
+        }
+      }
+    });
+    if (exception) {
+      throw new BadRequestException('La masseuse est absente ce jour-là (exception)');
+    }
+
+    // 2) Vérifier que la plage startDate-endDate est contenue dans un créneau valide (récurrent ou ponctuel)
+    const allowed = await this.isInAllowedSlot(startDate, endDate);
+    if (!allowed) {
+      throw new BadRequestException('Le créneau demandé n\'est pas dans les créneaux disponibles');
+    }
+
+    // 3) Vérifier les conflits avec d'autres réservations (exclut les CANCELLED)
     await this.checkTimeSlotConflict(startDate, endDate, data.prestationId);
 
-    return this.databaseService.reservation.create({
+    // 4) Prix figé (snapshot)
+    const price = prestation.price;
+
+    // 5) Création de la réservation (on conserve price figé)
+    const reservation = await this.databaseService.reservation.create({
       data: {
         startDate,
         endDate,
         status: data.status || ReservationStatus.PENDING,
-        price: prestation.price,
+        price,
         userId: data.userId,
         prestationId: data.prestationId,
       },
@@ -61,6 +95,65 @@ export class ReservationService {
         prestation: true,
       }
     });
+
+    return reservation;
+  }
+
+  private async isInAllowedSlot(startDate: Date, endDate: Date): Promise<boolean> {
+    const dayOfWeek = startDate.getDay(); // 0 = Dimanche, 1 = Lundi, ...
+    const startOfDay = new Date(startDate); startOfDay.setHours(0, 0, 0, 0);
+    const endOfDay = new Date(startOfDay); endOfDay.setHours(23, 59, 59, 999);
+
+    // Récupérer créneaux récurrents du jour
+    const recurringSlots = await this.databaseService.recurringSlot.findMany({
+      where: { dayOfWeek }
+    });
+
+    // Récupérer créneaux ponctuels pour ce jour
+    const oneTimeSlots = await this.databaseService.oneTimeSlot.findMany({
+      where: {
+        date: {
+          gte: startOfDay,
+          lte: endOfDay
+        }
+      }
+    });
+
+    // Construire les paires [slotStartDate, slotEndDate] pour chaque créneau
+    const candidateSlots: { slotStart: Date; slotEnd: Date }[] = [];
+
+    // Helper parse "HH:mm" -> Date sur la date de startDate
+    const parseTimeOnDate = (timeStr: string, baseDate: Date) => {
+      const [hh, mm] = timeStr.split(':').map(Number);
+      const d = new Date(baseDate);
+      d.setHours(hh, mm, 0, 0);
+      return d;
+    };
+
+    // Ajouter recurring slots
+    for (const s of recurringSlots) {
+      const slotStart = parseTimeOnDate(s.startTime, startOfDay);
+      const slotEnd = parseTimeOnDate(s.endTime, startOfDay);
+      // Ignore si mal formé
+      if (slotEnd > slotStart) candidateSlots.push({ slotStart, slotEnd });
+    }
+
+    // Ajouter oneTime slots (ils ont une date complète)
+    for (const s of oneTimeSlots) {
+      const base = new Date(s.date);
+      const slotStart = parseTimeOnDate(s.startTime, base);
+      const slotEnd = parseTimeOnDate(s.endTime, base);
+      if (slotEnd > slotStart) candidateSlots.push({ slotStart, slotEnd });
+    }
+
+    // Vérifier si startDate/endDate sont entièrement contenus dans au moins un candidateSlot
+    for (const cs of candidateSlots) {
+      if (startDate >= cs.slotStart && endDate <= cs.slotEnd) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   async findAll(filters?: {

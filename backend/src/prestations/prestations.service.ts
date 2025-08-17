@@ -16,7 +16,7 @@ export class PrestationsService {
       });
 
       if (!categoryExists) {
-        throw new BadRequestException('Category not found');
+        throw new BadRequestException('Impossible de trouver la catégorie');
       }
 
       return await this.prisma.prestation.create({
@@ -35,7 +35,7 @@ export class PrestationsService {
       if (error instanceof BadRequestException) {
         throw error;
       }
-      throw new BadRequestException('Failed to create prestation');
+      throw new BadRequestException('Erreur lors de la création de la prestation');
     }
   }
 
@@ -85,7 +85,7 @@ export class PrestationsService {
     });
 
     if (!prestation) {
-      throw new NotFoundException(`Prestation with ID ${id} not found`);
+      throw new NotFoundException(`Impossible de trouver la prestation ${id}`);
     }
 
     return prestation;
@@ -98,7 +98,7 @@ export class PrestationsService {
     });
 
     if (!existingPrestation) {
-      throw new NotFoundException(`Prestation with ID ${id} not found`);
+      throw new NotFoundException(`Impossible de trouver la prestation ${id}`);
     }
 
     // Si categoryId est fourni, vérifier qu'elle existe
@@ -108,7 +108,7 @@ export class PrestationsService {
       });
 
       if (!categoryExists) {
-        throw new BadRequestException('Category not found');
+        throw new BadRequestException('Impossible de trouver la catégorie');
       }
     }
 
@@ -121,7 +121,7 @@ export class PrestationsService {
         },
       });
     } catch (error) {
-      throw new BadRequestException('Failed to update prestation');
+      throw new BadRequestException('Erreur lors de la mise à jour de la prestation');
     }
   }
 
@@ -139,7 +139,7 @@ export class PrestationsService {
     });
 
     if (!existingPrestation) {
-      throw new NotFoundException(`Prestation with ID ${id} not found`);
+      throw new NotFoundException(`Impossible de trouver la prestation ${id}`);
     }
 
     try {
@@ -152,11 +152,11 @@ export class PrestationsService {
       });
 
       return {
-        message: `Prestation "${deletedPrestation.title}" has been successfully deleted. ${existingPrestation._count.reservations} reservation(s) were preserved for history.`,
+        message: `La prestation "${deletedPrestation.title}" a été supprimé. ${existingPrestation._count.reservations} reservation(s) were preserved for history.`,
         deletedPrestation,
       };
     } catch (error) {
-      throw new BadRequestException('Failed to delete prestation');
+      throw new BadRequestException('Erreur lors de la suppression de la prestation');
     }
   }
 
