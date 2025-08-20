@@ -4,9 +4,13 @@ import { LoginComponent } from './auth/login/login.component';
 import { RegisterComponent } from './auth/register/register.component';
 import { PrestationsComponent } from './features/prestations/prestations.component';
 import { PrestationsDetailsComponent } from './features/prestations/prestations-details/prestations-details.component';
+import { AppComponent } from './app.component';
 
 export const routes: Routes = [
-    { path: '', redirectTo: '/prestations', pathMatch: 'full' },
+    { path: '', redirectTo: '/', pathMatch: 'full' },
+    
+    { path: '/', component: AppComponent },
+
     { path: 'prestations', component: PrestationsComponent },
     { path: 'prestations/:id', component: PrestationsDetailsComponent },
 
