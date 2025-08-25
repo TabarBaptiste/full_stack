@@ -12,8 +12,13 @@ RUN npm install
 # Copier le reste du code
 COPY . .
 
+# Installer les certificats SSL
+RUN apt-get update && apt-get install -y ca-certificates
+
+ENV NODE_TLS_REJECT_UNAUTHORIZED=0
+
 # Générer Prisma client (important !)
-RUN npx prisma generate
+# RUN npx prisma generate
 
 # Exposer le port du back
 EXPOSE 3000
